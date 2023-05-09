@@ -1,9 +1,6 @@
-
-
 Sys.setenv(LANGUAGE = "en") 
 options(stringsAsFactors = FALSE)
 
-#packages
 library(circlize)
 library(ComplexHeatmap)
 
@@ -40,15 +37,8 @@ Class2.Col <- c("Adrenal\ngland" = "#957D84", "Thyroid" = "#E6CEE0",
                 "Colon" = "#6C8E59")
 
 Col = c(Cohort.Col, Class1.Col, Class2.Col)
-
-
 CS.Col = colorRamp2(breaks = c(-2,0,4), c("#F7FBFC","#4DBBD5B2", "#00A087B2"))
-
-
 SectorColor <- function(sector, col, track.index, sampleInfo, currentCol, standardCol = "Cohort", ...){
-  
-  
-  
   cohorts.to.plot = unique(SampleInfo[[standardCol]][SampleInfo[[currentCol]] %in% sector])
   st.degree = max(unlist(lapply(cohorts.to.plot, get.cell.meta.data, name = "cell.start.degree")))
   ed.degree = min(unlist(lapply(cohorts.to.plot, get.cell.meta.data, name = "cell.end.degree")))
@@ -60,9 +50,7 @@ SectorColor <- function(sector, col, track.index, sampleInfo, currentCol, standa
 }
 
 SectorLabel <- function(sector, col, track.index, sampleInfo, currentCol, standardCol = "Cohort", niceFacing = T, ...){
-  
-  
-  
+
   plot.data = sampleInfo[sampleInfo[[currentCol]] %in% sector, ]
   plot.data = plot.data[round(0.5*nrow(plot.data)), ]
   circos.text(x = plot.data$ID, y = 0.5, labels = sector, sector.index = plot.data$Cohort, track.index = track.index, col = col, niceFacing = niceFacing, ...)
