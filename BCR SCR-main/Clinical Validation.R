@@ -1,8 +1,4 @@
-
-
-
-rm(list=ls())
-
+options(stringsAsFactors = F)
 library(survival)
 library(survminer)
 library(ggplot2)
@@ -10,37 +6,16 @@ library(dplyr)
 library(tidyr)
 library(tibble)
 library(data.table)
+library(timeROC)
 
-
-setwd(" ")
-
-
-CancerMap<- read.csv(" ")  
-
-CIT<- read.csv(" ")  
-
-CPC<- read.csv(" ")  
-
-GSE54460<-  read.csv(" ")  
-
-stockholm <- read.csv(" ")  
-
-Taylor<-read.csv(" ")  
-
-TCGA<- read.csv(" ")  
-
+load('')
 
 ###KM
-
 risk<- TCGA
-
-
 rt <- risk %>% 
   filter(BCR.time >= 1) %>% 
   mutate(BCR.time = BCR.time/12)
-
 colnames(risk)
-
 res.cut <- surv_cutpoint(rt, 
                          time = "BCR.time",
                          event = "BCR", 
@@ -49,16 +24,10 @@ res.cut <- surv_cutpoint(rt,
                          
 )                      
 summary(res.cut) 
-
-
-
 # 3. Categorize variables
 res.cat <- surv_categorize(res.cut)
 head(res.cat)
-
-
 fit <- survfit(Surv(BCR.time, BCR) ~riskscore, data = res.cat)
-
 #plot
 pp <- ggsurvplot(fit,
                  data = res.cat,
@@ -80,25 +49,8 @@ pp <- ggsurvplot(fit,
                  fontsize=4.5
                  
 )
-pp
-
-pdf(file="Figures/KMplot/TCGA_BCR_KM.pdf",width = 5.85,height = 6.85,onefile = FALSE)
-print(pp)
-dev.off()
-
-
 
 ####ROC
-
-
-library(timeROC)
-library(survival)
-options(stringsAsFactors = F)
-
-dat<- TCGA_risk
-
-result<- data.frame()              
-
 timeroc<-timeROC(T=dat$BCR.time,                        
                  delta=dat$BCR, marker=dat[,4],
                  cause=1,weighting="marginal",
@@ -114,7 +66,6 @@ plot(timeroc,
      time=8, col="#00A087FF", add=TRUE, lwd=2)    
 plot(timeroc,
      time=10, col="#F39B7FFF", add=TRUE, lwd=2)
-
 #add legends
 legend("bottomright",
        c(paste0("6-year = ",round(timeroc[["AUC"]][1],3)), 
@@ -123,15 +74,9 @@ legend("bottomright",
        col=c("#DC0000FF", "#00A087FF", "#F39B7FFF"),
        lty=1, lwd=2,bty = "n")   
 
-
 dev.off()
 
-
 ####Cox analysis
-
-library(survival)       
-
-
 bioForest=function(coxFile=null, forestFile=null, forestCol=null){
   
   rt <- read.table(coxFile, header=T, sep="\t", check.names=F, row.names=1)
@@ -142,13 +87,11 @@ bioForest=function(coxFile=null, forestFile=null, forestCol=null){
   Hazard.ratio <- paste0(hr,"(",hrLow,"-",hrHigh,")")
   pVal <- ifelse(rt$pvalue<0.001, "<0.001", sprintf("%.3f", rt$pvalue))
   
-  
   pdf(file=forestFile, width=8, height=3)
   n <- nrow(rt)
   nRow <- n+1
   ylim <- c(1,nRow)
   layout(matrix(c(1,2),nc=2),width=c(3,2.5))
-  
   
   xlim = c(0,3)
   par(mar=c(4,2.5,2,1))
@@ -170,13 +113,9 @@ bioForest=function(coxFile=null, forestFile=null, forestCol=null){
   dev.off()
 }
 
-
-
 indep=function(expFile=null,cliFile=null,uniOutFile=null,multiOutFile=null,uniForest=null,multiForest=null){
   exp=read.table(expFile, header=T, sep="\t", check.names=F, row.names=1)     
   cli=read.table(cliFile, header=T, sep="\t", check.names=F, row.names=1)     
-  
-  
   sameSample=intersect(row.names(cli),row.names(exp))
   exp=exp[sameSample,]
   cli=cli[sameSample,]
@@ -214,7 +153,6 @@ indep=function(expFile=null,cliFile=null,uniOutFile=null,multiOutFile=null,uniFo
   bioForest(coxFile=multiOutFile, forestFile=multiForest, forestCol="#DC0000FF")
 }
 
-#function
 indep(expFile="TCGArisk.txt",
       cliFile="TCGAclinical.txt",
       uniOutFile="TCGAuniCox.txt",
