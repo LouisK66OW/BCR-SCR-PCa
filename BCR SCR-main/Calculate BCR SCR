@@ -1,6 +1,5 @@
 Example:
 
 load('predictscore.RData')
-
-score_test[,-c(1:3)]<- scale(score_test[,-c(1:3)])
-riskscore<- cbind(score_test[,1:3],RS=predict(fit,newdata = score_test)$predicted)
+data[,-c(1:3)]<- scale(data[,-c(1:3)])
+riskscore<- cbind(score_test[,1:3],RS=predict(fit,newdata = data)$predicted)
