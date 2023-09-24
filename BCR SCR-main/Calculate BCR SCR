@@ -3,4 +3,4 @@ load('predictscore.RData')
 
 #data is test data
 data<- data.frame(scale(data))
-BCR SCR <- predict(fit,newdata = data)$predicted
+score <- predict(fit,newdata = data)$predicted
