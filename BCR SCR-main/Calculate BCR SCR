@@ -1,5 +1,7 @@
 Example:
 
 load('predictscore.RData')
-data[,-c(1:3)]<- scale(data[,-c(1:3)])
-riskscore<- cbind(score_test[,1:3],RS=predict(fit,newdata = data)$predicted)
+
+#data is test data
+data<- data.frame(scale(data))
+BCR SCR <- predict(fit,newdata = data)$predicted
